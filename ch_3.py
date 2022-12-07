@@ -10,7 +10,7 @@ sc = spark.sparkContext
 
 sc.setLogLevel("ERROR")
 results = (
-    spark.read.text("data/gutenberg_books/1342-0.txt")
+    spark.read.text("data/gutenberg_books/*.txt")
     .select(F.split(F.col("value"), " ").alias("line"))
     .select(F.explode(F.col("line")).alias("word"))
     .select(F.lower(F.col("word")).alias("word_lower"))
