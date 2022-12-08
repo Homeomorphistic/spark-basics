@@ -23,3 +23,20 @@ logs = spark.read.csv(
 )
 
 logs.printSchema()
+logs.select("BroadcastLogID", F.col("LogServiceID"), "LogDate").show(5, truncate=False)
+logs = logs.drop("BroadcastLogID", "SequenceNO")
+
+#logs = logs.withColumn("DurationTime", F.substring(F.col("Duration"), 1, 8))
+
+logs = logs.withColumn(
+    "Duration_seconds",
+   (
+    F.col("Duration").substr(1, 2).cast("int") * 60 * 60
+    + F.col("Duration").substr(4, 2).cast("int") * 60
+    + F.col("Duration").substr(7, 2).cast("int")
+   )
+)
+
+for name in logs.columns[:5]:
+    logs.describe(name).show()
+    logs.select(name).summary().show()
